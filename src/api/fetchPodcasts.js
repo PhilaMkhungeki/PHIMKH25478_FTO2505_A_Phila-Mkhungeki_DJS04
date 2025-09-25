@@ -6,7 +6,7 @@
  */
 export async function fetchPodcasts(setPodcasts,setError, setLoading) {
     try {
-        const response = await fetch('https://api.example.com/podcasts');
+        const response = await fetch('https://podcast-api.netlify.app');
         if (!response.ok) {
             throw new Error(`${response.status}`);
         }
