@@ -16,6 +16,27 @@ body {
   box-shadow: 0 1px 5px rgba(0, 0, 0, 0.1);
 }
 
+.seach-bar{
+  display: flex;
+  border: 1px solid grey;
+  border-radius: 8px;
+  padding: 5px;
+  width: 200px;
+  height: 30px;
+}
+
+.input {
+  height: 50px;
+}
+
+.search-icon{
+  margin-top: 25px;
+  margin-right: 15px;
+  background-color: #555;
+  padding-top: 5px;
+  height: 50px
+}
+
 .grid {
   display: grid;
   gap: 1rem;

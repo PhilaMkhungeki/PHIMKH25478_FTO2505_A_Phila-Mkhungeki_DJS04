@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import PodcastGrid from "./components/PodcastGrid";
 import {fetchPodcasts} from "./api/fetchPodcasts";
 import { genres } from "../data";
+import Filtering from "./components/Filtering";
 
 export default function App() {
     const [podcasts, setPodcasts] = useState([]);
@@ -16,6 +17,7 @@ export default function App() {
   return (
     <>
       <Header />
+      <Filtering />
       <main>
         {loading && (
           <div className="message-container">
