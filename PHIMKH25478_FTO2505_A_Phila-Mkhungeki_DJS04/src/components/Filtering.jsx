@@ -1,28 +1,27 @@
+import React from 'react';
+import {genres} from "../data";
 /**
  * Filter podcasts by genres
  */
-export default function Filtering(){
+export default function Filtering({ onGenreChange, onSortChange, selectedGenre, selectedSort }){
     return(
         <div className="filtering">
             <p>Filter by: </p>
-            <select name="genres" id="genres">
+            {/* Genre Filter */}
+            <select name="genres" id="genres" value="{selectedGenre}" onChange={(e) => onGenreChange(e.target.value)} >
                 <option value="">All genres</option>
-                <option value="">Personal Growth</option>  
-                <option value="">Investigative Journalism</option> 
-                <option value="">History</option>
-                <option value="">Comedy</option>
-                <option value="">Entertainment</option>
-                <option value="">Fiction</option>
-                <option value="">BUsiness</option>
-                <option value="">News</option>
-                <option value="">Kids and Family</option>
+                {genres.map((genre) => (
+                    <option key={genre.id} value={genre.title}>{genre.title}</option>
+                ))}
             </select>
-            <select>
-                <option value="">Recently Updated</option>
-                <option value="">Newest</option>  
-                <option value="">A-Z</option> 
-                <option value="">Z-A</option>
+
+            {/* Sorting Options */}
+            <select value={selectedSort} onChange={(e) => onSortChange(e.target.value)}>
+                <option value="newest">Recently Updated</option>
+                <option value="oldest">Newest</option>  
+                <option value="title-asc">A-Z</option> 
+                <option value="title-desc">Z-A</option>
             </select>
         </div>    
-    )
+    );
 }
