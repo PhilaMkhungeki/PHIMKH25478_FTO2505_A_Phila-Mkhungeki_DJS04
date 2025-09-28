@@ -5,6 +5,7 @@ import {fetchPodcasts} from "./api/fetchPodcasts";
 import { genres } from "../data";
 import Filtering from "./components/Filtering";
 import { sortPodcasts, filterPodcastsByGenre } from "./utils/sortPodcasts";
+import {calculateTotalPages, getCurrentPageItems} from "./utils/paginationUtils";
 
 export default function App() {
     const [podcasts, setPodcasts] = useState([]);
@@ -12,6 +13,10 @@ export default function App() {
     const [error, setError] = useState(null);
      const [selectedGenre, setSelectedGenre] = useState('');
     const [selectedSort, setSelectedSort] = useState('newest');
+
+    // Pagination state
+    const [currentPage, setCurrentPage] = useState(1);
+    const [itemsPerPage, setItemsPerPage] = useState(12);
 
     useEffect(() => {
         fetchPodcasts(setPodcasts, setError, setLoading);
@@ -34,6 +39,19 @@ export default function App() {
         return result;
     }, [podcasts, selectedGenre, selectedSort]);
 
+    // Reset to page 1 when filters/sort change
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [selectedGenre, selectedSort]);
+
+    // Get current page items
+    const currentPodcasts = useMemo(() => {
+        return getCurrentPageItems(filteredAndSortedPodcasts, currentPage, itemsPerPage);
+    }, [filteredAndSortedPodcasts, currentPage, itemsPerPage]);
+
+    // Calculate total pages
+    const totalPages = calculateTotalPages(filteredAndSortedPodcasts.length, itemsPerPage);
+
     const handleGenreChange = (genreTitle) => {
         setSelectedGenre(genreTitle);
     };
@@ -42,6 +60,11 @@ export default function App() {
         setSelectedSort(sortOption);
     };
 
+    const handlePageChange = (page) => {
+        setCurrentPage(page);
+        // Scroll to top when page changes
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
 
   return (
     <>
@@ -69,12 +92,33 @@ export default function App() {
         )}
 
         {!loading && !error && (
-          <PodcastGrid 
-              podcasts={filteredAndSortedPodcasts} 
-              genres={genres} 
-              selectedGenre={selectedGenre}
-              totalPodcasts={podcasts.length} 
-          />
+            <>
+              {/* Results Info */}
+              <div className="results-info">
+                  <p>
+                      Showing {currentPodcasts.length} of {filteredAndSortedPodcasts.length} podcasts
+                      {selectedGenre && ` in ${selectedGenre}`}
+                      {filteredAndSortedPodcasts.length > itemsPerPage && 
+                          ` (Page ${currentPage} of ${totalPages})`
+                      }
+                  </p>
+              </div>
+
+              {/* Podcast Grid */}
+              <PodcastGrid 
+                  podcasts={currentPodcasts} 
+                  genres={genres} 
+              />
+
+              {/* Pagination Controls */}
+              {totalPages > 1 && (
+                  <Pagination
+                      currentPage={currentPage}
+                      totalPages={totalPages}
+                      onPageChange={handlePageChange}
+                  />
+              )}
+          </>
         )}
       </main>
     </>
