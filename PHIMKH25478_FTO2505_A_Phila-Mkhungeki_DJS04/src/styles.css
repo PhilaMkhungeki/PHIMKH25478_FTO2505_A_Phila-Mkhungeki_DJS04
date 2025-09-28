@@ -120,6 +120,10 @@ body {
   margin-top: 10%;
 }
 
+.filtering {
+  padding: 1rem;
+}
+
 @keyframes spin {
   to {
     transform: rotate(360deg);

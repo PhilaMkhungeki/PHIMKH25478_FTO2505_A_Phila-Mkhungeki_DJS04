@@ -1,5 +1,5 @@
 import React from 'react';
-import {genres} from "../data";
+import {genres} from "../../data";
 /**
  * Filter podcasts by genres
  */

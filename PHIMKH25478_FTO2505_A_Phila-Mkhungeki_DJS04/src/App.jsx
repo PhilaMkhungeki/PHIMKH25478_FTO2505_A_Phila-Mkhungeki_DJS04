@@ -4,13 +4,19 @@ import PodcastGrid from "./components/PodcastGrid";
 import {fetchPodcasts} from "./api/fetchPodcasts";
 import { genres } from "../data";
 import Filtering from "./components/Filtering";
-import { sortPodcasts, filterPodcastsByGenre } from "./utils/sortPodcasts";
+import { sortPodcasts, filterPodcastsByGenre } from "./utils/sortingUtils";
 import {calculateTotalPages, getCurrentPageItems} from "./utils/paginationUtils";
+import Pagination from "./components/Pagination";
 
 export default function App() {
     const [podcasts, setPodcasts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+
+    //Search state
+    const [searchTerm, setSearchTerm] = useState("");
+
+    // Filtering and sorting state
      const [selectedGenre, setSelectedGenre] = useState('');
     const [selectedSort, setSelectedSort] = useState('newest');
 
@@ -28,6 +34,12 @@ export default function App() {
 
         let result = podcasts;
 
+        // Apply search filter
+        if (searchTerm) {
+          const term = searchTerm.toLowerCase();
+          result = result.filter((p) => p.title.toLowerCase().includes(term));
+        }
+
         // Apply genre filter using the genres array
         if (selectedGenre) {
             result = filterPodcastsByGenre(result, selectedGenre, genres);
@@ -37,12 +49,12 @@ export default function App() {
         result = sortPodcasts(result, selectedSort);
 
         return result;
-    }, [podcasts, selectedGenre, selectedSort]);
+    }, [podcasts, searchTerm, selectedGenre, selectedSort]);
 
-    // Reset to page 1 when filters/sort change
+    // Reset to page 1 when filters/sort/search change
     useEffect(() => {
         setCurrentPage(1);
-    }, [selectedGenre, selectedSort]);
+    }, [searchTerm, selectedGenre, selectedSort]);
 
     // Get current page items
     const currentPodcasts = useMemo(() => {
@@ -68,7 +80,10 @@ export default function App() {
 
   return (
     <>
-      <Header />
+      <Header 
+        searchTerm={searchTerm} 
+        onSearchChange={setSearchTerm}
+      />
       <Filtering 
             onGenreChange={handleGenreChange}
             onSortChange={handleSortChange}
@@ -97,6 +112,7 @@ export default function App() {
               <div className="results-info">
                   <p>
                       Showing {currentPodcasts.length} of {filteredAndSortedPodcasts.length} podcasts
+                      {searchTerm && ` matching "${searchTerm}"`}
                       {selectedGenre && ` in ${selectedGenre}`}
                       {filteredAndSortedPodcasts.length > itemsPerPage && 
                           ` (Page ${currentPage} of ${totalPages})`
